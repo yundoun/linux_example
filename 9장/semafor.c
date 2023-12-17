@@ -21,7 +21,7 @@ void *producer(void *arg)
   for (int i = 0; i < 5; i++) // 아이템을 5번 생산
   {
     item = rand() % 100; // 랜덤한 아이템 생성
-    sem_wait(&empty);    // empty 세마포어를 감소시킴
+    sem_wait(&empty);    // 버퍼가 비어있을 때까지 기다림
     sem_wait(&mutex);    // 공유 데이터에 접근하는 부분 뮤텍스로 보호
 
     // 아이템을 버퍼에 넣음
@@ -30,7 +30,7 @@ void *producer(void *arg)
     in = (in + 1) % BUFFER_SIZE;
 
     sem_post(&mutex); // 뮤텍스 잠금 해제
-    sem_post(&full);  // full 세마포어를 증가시킴
+    sem_post(&full);  // 버퍼가 차있음을 알림
     sleep(1);         // 생산하는데 1초 소요
   }
   pthread_exit(NULL);
@@ -42,7 +42,7 @@ void *consumer(void *arg)
   int item;
   for (int i = 0; i < 5; i++) // 아이템을 5번 소비
   {
-    sem_wait(&full);  // full 세마포어를 감소시킴
+    sem_wait(&full);  // 버퍼가 차있을 때까지 기다림
     sem_wait(&mutex); // 공유 데이터에 접근하는 부분 뮤텍스로 보호
 
     // 아이템을 버퍼에서 가져옴
@@ -51,7 +51,7 @@ void *consumer(void *arg)
     out = (out + 1) % BUFFER_SIZE;
 
     sem_post(&mutex); // 뮤텍스 잠금 해제
-    sem_post(&empty); // empty 세마포어를 증가시킴
+    sem_post(&empty); // 버퍼가 비어있음을 알림
     sleep(2);         // 소비하는데 2초 소요
   }
   pthread_exit(NULL);
@@ -105,3 +105,9 @@ int main()
 // 프로그램은 PRODUCER_COUNT 개수의 생산자 스레드와 CONSUMER_COUNT 개수의 소비자 스레드를 생성하고,
 // 링 버퍼에 데이터를 생산자가 넣고 소비자가 가져가는 동작을 반복합니다.
 // 세마포어 empty, full, mutex를 사용하여 스레드 간 동기화를 제어합니다.
+
+// 이 코드는 뮤텍스와 세마포어를 사용하여 생산자 - 소비자 문제를 해결하는 예제입니다.
+// 프로그램은 PRODUCER_COUNT 개수의 생산자 스레드와 CONSUMER_COUNT 개수의 소비자 스레드를 생성하고,
+// 링 버퍼에 데이터를 생산자가 넣고 소비자가 가져가는 동작을 반복합니다.
+// 세마포어 empty, full, mutex를 사용하여 스레드 간 동기화를 제어하며,
+// 각 스레드는 버퍼에 데이터를 쓰고 읽는 동작을 안전하게 수행합니다.

@@ -4,14 +4,14 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define PORT 12345
-#define SERVER_IP "127.0.0.1"
+#define PORT 12345            // 서버 포트 번호
+#define SERVER_IP "127.0.0.1" // 서버 IP 주소
 
 int main()
 {
-  int client_socket;
-  struct sockaddr_in server_addr;
-  char message[1024];
+  int client_socket;              // 클라이언트 소켓 식별자
+  struct sockaddr_in server_addr; // 서버 주소 구조체
+  char message[1024];             // 메시지를 저장할 버퍼
 
   // 클라이언트 소켓 생성
   client_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,9 +22,9 @@ int main()
   }
 
   // 서버 주소 설정
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(PORT);
-  server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+  server_addr.sin_family = AF_INET;                   // IPv4 주소 체계 사용
+  server_addr.sin_port = htons(PORT);                 // 서버 포트 번호 설정
+  server_addr.sin_addr.s_addr = inet_addr(SERVER_IP); // 서버 IP 주소 설정
 
   // 서버에 연결
   if (connect(client_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
@@ -51,7 +51,7 @@ int main()
     printf("Server response: %s", message);
   }
 
-  close(client_socket);
+  close(client_socket); // 클라이언트 소켓 닫기
 
   return 0;
 }
